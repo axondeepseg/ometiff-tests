@@ -20,9 +20,10 @@ Base procedure: https://docs.google.com/document/d/132EuvGahGo0ujo0PuRz7ZaoCgJP7
 - Open the Python file you’re working on in your code editor (ex: VS Code)
 - For *tifffile*, simply incorporate `import tifffile` in your code
 - For *libvips*, add the lines:
-`from ctypes import *`
-`cdll.LoadLibrary("C:/.../vips-dev-X.Y/bin/libgobject-2.0-0.dll")`
-`cdll.LoadLibrary("C:/.../vips-dev-X.Y/bin/libvips-42.dll")`
-`import pyvips`
- 
+```
+from ctypes import *
+cdll.LoadLibrary("C:/.../vips-dev-X.Y/bin/libgobject-2.0-0.dll")
+cdll.LoadLibrary("C:/.../vips-dev-X.Y/bin/libvips-42.dll")
+import pyvips
+```
 Where C:/.../vips-dev-X.Y represents the path to where you saved the previous folder (see above). Without the three lines before import pyvips, you may get an OSError because the libraries can’t be found.
