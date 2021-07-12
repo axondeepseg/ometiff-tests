@@ -1,5 +1,5 @@
 # ometiff-tests
-This repository contains the files used to test OME-TIFF images for BIDS-microscopy. The NDPI and the TIFF files are from Osvaldo Delbono’s dataset. The test OME-TIFF is a sample data from https://docs.openmicroscopy.org/ome-model/5.6.3/ome-tiff/data.html.
+This repository contains the files used to test OME-TIFF images for BIDS-microscopy. The NDPI and the OME-TIFF test images are respectively sample data from OME downloads (https://downloads.openmicroscopy.org/images/Hamamatsu-NDPI/manuel/) and documentation (https://docs.openmicroscopy.org/ome-model/5.6.3/ome-tiff/data.html). These images have been used under Creative Commons Attribution 4.0 International License (https://creativecommons.org/licenses/by/4.0/). No change was made to the original images.
 
 ## Python packages installation
 The following procedure describes how to install the Python packages used for the ometiff-tests notebook. These packages are useful to read, write OME-TIFF and convert different types of file to OME-TIFF.
