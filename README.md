@@ -2,7 +2,7 @@
 This repository contains the files used to test OME-TIFF images for BIDS-microscopy. The NDPI and the TIFF files are from Osvaldo Delbono’s dataset. The test OME-TIFF is a sample data from https://docs.openmicroscopy.org/ome-model/5.6.3/ome-tiff/data.html.
 
 ## Python packages installation
-Base procedure: https://docs.google.com/document/d/132EuvGahGo0ujo0PuRz7ZaoCgJP7aIy5nXBbJgFTY9s/edit#heading=h.qb69k75v999j
+The following procedure describes how to install the Python packages used for the ometiff-tests notebook. These packages are useful to read, write OME-TIFF and convert different types of file to OME-TIFF.
 
 ### 1. Install the Python package tifffile
 - Open the Anaconda Prompt
@@ -26,4 +26,6 @@ cdll.LoadLibrary("C:/.../vips-dev-X.Y/bin/libgobject-2.0-0.dll")
 cdll.LoadLibrary("C:/.../vips-dev-X.Y/bin/libvips-42.dll")
 import pyvips
 ```
-Where C:/.../vips-dev-X.Y represents the path to where you saved the previous folder (see above). Without the three lines before import pyvips, you may get an OSError because the libraries can’t be found.
+Where `C:/.../vips-dev-X.Y` represents the path to where you saved the previous folder (see above). Without the three lines before import pyvips, you may get an OSError because the libraries can’t be found.
+
+*Tested with Visual Studio Code 1.57.1 with Python 3.9.2 on Windows10*
