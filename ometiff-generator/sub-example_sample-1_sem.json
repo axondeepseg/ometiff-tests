@@ -20,7 +20,11 @@
         "SampleExtractionProtocol": "n/a",
         "SampleExtractionInstitution": "n/a",
         "ShrinkageFactor": 2,
-        "PixelSize": "[0.18, 0.18]",
+        "PixelSize": [
+                1,
+                1,
+                1
+        ],
         "PixelSizeUnits": "um",
         "ImageAcquisitionProtocol": "n/a",
         "OtherAcquisitionParameters": "n/a"
