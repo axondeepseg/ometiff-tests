@@ -7,6 +7,8 @@ function getExif() {
 }
 getExif().then(function(result) {
     console.log(result)
+    console.log("ImageWidth:", result['ImageWidth'])
+    console.log("ImageLength:", result['ImageLength'])
     console.log("XResolution:", result['XResolution'])
     console.log("YResolution:", result['YResolution'])
     console.log("ResolutionUnit:", result['ResolutionUnit'])
