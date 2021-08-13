@@ -1,6 +1,6 @@
 # Instructions
 
-ExifReader is a JavaScript library used to read images metadata. 
+ExifReader (https://github.com/mattiasw/ExifReader) is a JavaScript library used to read images metadata. 
 - Open your command window
 - reach the directory `cd AppData\Roaming\npm\node_modules`
 - Type `npm install exifreader --save`
