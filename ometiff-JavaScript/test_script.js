@@ -7,4 +7,7 @@ function getExif() {
 }
 getExif().then(function(result) {
     console.log(result)
+    console.log("XResolution:", result['XResolution'])
+    console.log("YResolution:", result['YResolution'])
+    console.log("ResolutionUnit:", result['ResolutionUnit'])
 })
