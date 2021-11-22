@@ -1,5 +1,5 @@
-import ExifReader from '../../../../../../AppData/Roaming/npm/node_modules/exifreader/dist/exif-reader.js'
-import xml2js from '../../../../../../AppData/Roaming/npm/node_modules/xml2js/lib/xml2js.js'
+import ExifReader from '../../bids-validator/node_modules/exifreader/dist/exif-reader.js'
+import xml2js from '../../bids-validator/node_modules/xml2js/lib/xml2js.js'
 
 function getExif() {
     const tags = ExifReader.load("test_image.ome.tif");
