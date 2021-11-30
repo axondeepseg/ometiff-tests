@@ -10,7 +10,7 @@ function getExif() {
 
 function convertFactor(fromUnit, toUnit) {
     if(!validunits.includes(fromUnit) || !validunits.includes(toUnit)){
-        console.log('\x1b[31mWARNING: "%s" is an invalid physicalSizeUnit\x1b[0m', fromUnit)
+        console.log('\x1b[31mWARNING: PixelSize consistency is only validated for "mm", "um" and "nm". PhysicalUnit in OME-TIFF is "%s", consistency check is skipped.\x1b[0m', fromUnit)
         process.exit(1)
     }
 
