@@ -1,0 +1,7 @@
+{
+  "name": "ometiff-javascript",
+  "dependencies": {
+    "exifreader": "^4.1.0",
+    "xml2js": "^0.4.23"
+  }
+}
