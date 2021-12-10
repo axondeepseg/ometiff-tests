@@ -1,14 +1,14 @@
 # Instructions
 
-ExifReader (https://github.com/mattiasw/ExifReader) is a JavaScript library used to read images metadata. To install it:
-- Open your command window
-- reach the directory `cd AppData\Roaming\npm\node_modules`
-- Type `npm install exifreader --save`
-- Type `npm install esm`<br>
-`esm` stands for ES modules. It helps with the module importation and permits the use of the flag `-r esm`. Without it, we get a SyntaxError when running our test script.
-- Choose a location on your computer to clone the *ometiff-tests* repo on AxonDeepSeg
-- Right-click and select “Git Bash Here”
-- In Git Bash, type `git clone https://github.com/axondeepseg/ometiff-tests.git`
-- In your console, reach the directory where you cloned the ‘test_script.js’ with `cd`
-- Type `node -r esm test_script.js`. All the tags of the *test_image.ome.tif* will appear in the console. 
+ExifReader (https://github.com/mattiasw/ExifReader) is a JavaScript library used to parse image files and extracts the metadata.
+
+xml2js (https://github.com/Leonidas-from-XIV/node-xml2js) is a package that gives the ability to convert an XML to a JavaScript object. It will help to easily access the OME-TIFF metadata fields.
+
+To install them
+- Open your command window/terminal
+- Reach the directory `cd ometiff-tests\ometiff-JavaScript`
+- Type `npm install` to install exifreader and xml2js
+- Type `node PixelSizeConsistency.js` to run the metadata read script.
+The complete OME-XML of `test_image.ome.tif` will appear in the console, as well as the `<Image><Pixels>` fields. Those fields are interesting to validate the consistency of the PixelSize JSON field as well as its units (i.e. “um”).
+
 
