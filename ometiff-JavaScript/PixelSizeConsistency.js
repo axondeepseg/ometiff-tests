@@ -1,37 +1,41 @@
 const ExifReader = require('exifreader')
 const parseString = require('xml2js').parseString
 
-const validunits = ['um', 'nm', 'mm']
+const validUnitsInOME = ['µm', 'nm', 'mm']
+const validUnitsInJSON = ['um', 'nm', 'mm']
 
 function getExif() {
     const tags = ExifReader.load("test_image.ome.tif")
     return tags
 }
 
-function convertFactor(fromUnit, toUnit) {
-    if(!validunits.includes(fromUnit) || !validunits.includes(toUnit)){
-        console.log('\x1b[31mWARNING: PixelSize consistency is only validated for "mm", "um" and "nm". PhysicalUnit in OME-TIFF is "%s", consistency check is skipped.\x1b[0m', fromUnit)
+function convertFactor(omeUnit, jsonUnit) {
+    if(!validUnitsInOME.includes(omeUnit)){
+        console.log('\x1b[31mWARNING: PixelSize consistency is only validated for "mm", "µm" and "nm". PhysicalUnit in OME-TIFF is "%s", consistency check is skipped.\x1b[0m', omeUnit)
+        process.exit(1)
+    }else if(!validUnitsInJSON.includes(jsonUnit)) {
+        console.log('\x1b[31mWARNING: PixelSize consistency is only validated for "mm", "um" and "nm". PhysicalUnit in JSON is "%s", consistency check is skipped.\x1b[0m', jsonUnit)
         process.exit(1)
     }
 
-    if(fromUnit === toUnit) return 1
+    if(omeUnit === jsonUnit || (omeUnit === 'µm' && jsonUnit === 'um')) return 1
 
-    if(toUnit === 'um'){
-        if(fromUnit === 'mm') {
+    if(jsonUnit === 'um'){
+        if(omeUnit === 'mm') {
             return 1000
-        }else if(fromUnit === 'nm') {
+        }else if(omeUnit === 'nm') {
             return 0.001
         }
-    }else if(toUnit === 'mm'){
-        if(fromUnit === 'um') {
+    }else if(jsonUnit === 'mm'){
+        if(omeUnit === 'µm') {
             return 0.001
-        }else if(fromUnit === 'nm') {
+        }else if(omeUnit === 'nm') {
             return 0.000001
         }
-    }else if(toUnit === 'nm'){
-        if(fromUnit === 'mm') {
+    }else if(jsonUnit === 'nm'){
+        if(omeUnit === 'mm') {
             return 1000000
-        }else if(fromUnit === 'um') {
+        }else if(omeUnit === 'um') {
             return 1000
         }
     }
@@ -50,6 +54,10 @@ getExif().then(function(result) {
         const physicalSizeZ = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeZ']
         const physicalSizeZUnit = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeZUnit']
 
+        const immersion = output['OME']['Instrument'][0]['Objective'][0]['$']['Immersion']
+        const LensNA = output['OME']['Instrument'][0]['Objective'][0]['$']['LensNA']
+        const NominalMagnification = output['OME']['Instrument'][0]['Objective'][0]['$']['NominalMagnification']
+
         console.log("\nOME-TIFF metadata")
         const metadata = {
             "PhysicalSizeX" : physicalSizeX,
@@ -58,11 +66,16 @@ getExif().then(function(result) {
             "PhysicalSizeYUnit" : physicalSizeYUnit,
             "PhysicalSizeZ" : physicalSizeZ,
             "PhysicalSizeZUnit" : physicalSizeZUnit,
-            "DimensionOrder" : output['OME']['Image'][0]['Pixels'][0]['$']['DimensionOrder']
+            "DimensionOrder" : output['OME']['Image'][0]['Pixels'][0]['$']['DimensionOrder'],
+            "Immersion" : immersion,
+            "LensNA" : LensNA,
+            "NominalMagnification" : NominalMagnification
+
         }
         console.table(metadata)
         
         let jsonData = require('./test_image.json')
+
         let pixelSize = jsonData['PixelSize']
         let physicalSizeUnit = jsonData['PixelSizeUnits']
 
@@ -70,11 +83,30 @@ getExif().then(function(result) {
         let factorY = convertFactor(physicalSizeYUnit, physicalSizeUnit);
         let factorZ = convertFactor(physicalSizeZUnit, physicalSizeUnit);
 
+
+        // physicalSizeUnit consistency check
         if (physicalSizeX * factorX !== pixelSize[0] || physicalSizeY * factorY !== pixelSize[1] || physicalSizeZ * factorZ !== pixelSize[2]) {
             console.log("\x1b[31m%s\x1b[0m", "PixelSize is not consistent with PhysicalSizeX, PhysicalSizeY and PhysicalSizeZ OME metadata fields")
             console.log("\x1b[31mpixelSize in JSON is %s, the converted physicalSize from OME-XML is [%s, %s, %s]\x1b[0m", pixelSize, physicalSizeX * factorX, physicalSizeY * factorY, physicalSizeZ * factorZ)
         }else{
             console.log("\x1b[36m%s\x1b[0m", "PixelSize is consistent with PhysicalSizeX, PhysicalSizeY and PhysicalSizeZ OME metadata fields")
+        }
+
+
+        // optional fields consistency check
+        let fields = {'Immersion': 'Immersion', 'LensNA': 'NumericalAperture', 'NominalMagnification': 'Magnification'}
+
+        let objective = output['OME']['Instrument'][0]['Objective'][0]['$']
+
+
+        for(let field in fields) {
+            if(objective[field] && !jsonData[fields[field]]){
+                console.log("\x1b[31mOptional Field %s is present in the OME-TIFF file but not found the corresponding field %s in the JSON file\x1b[0m", field, fields[field])
+            }else if(objective[field] && jsonData[fields[field]]){
+                if(objective[field] != jsonData[fields[field]]){
+                    console.log("\x1b[31mOptional Field %s is %s in the OME-TIFF file but %s in the JSON file\x1b[0m", field, objective[field], jsonData[fields[field]])
+                }
+            }
         }
 
     })
