@@ -11,7 +11,7 @@ function getExif() {
 
 function convertFactor(omeUnit, jsonUnit) {
     if(!validUnitsInOME.includes(omeUnit)){
-        console.log('\x1b[31mERROR: PixelSize consistency is only validated for "mm", "µm" and "nm". PixelSizeUnits in OME-TIFF is "%s", consistency check is skipped.\x1b[0m', omeUnit)
+        console.log('\x1b[31mERROR: PixelSize consistency is only validated for "mm", "µm" and "nm". PhysicalUnit in OME-TIFF is "%s", consistency check is skipped.\x1b[0m', omeUnit)
         process.exit(1)
     }else if(!validUnitsInJSON.includes(jsonUnit)) {
         console.log('\x1b[31mERROR: PixelSize consistency is only validated for "mm", "um" and "nm". PixelSizeUnits in JSON is "%s", consistency check is skipped.\x1b[0m', jsonUnit)
@@ -88,19 +88,21 @@ getExif().then(function(result) {
         // optional fields consistency check
         let fields = {'Immersion': 'Immersion', 'NumericalAperture': 'LensNA', 'Magnification': 'NominalMagnification'}
 
-        let objective = output['OME']['Instrument'][0]['Objective'][0]['$']
+        if(output['OME']['Instrument'] && output['OME']['Instrument'][0]['Objective']){
+            let objective = output['OME']['Instrument'][0]['Objective'][0]['$']
 
-        for(let field in fields) {
-            if(jsonData[field] && !objective[fields[field]]){
-                console.log("\x1b[31mOptional Field %s is present in the JSON file but not found the corresponding field %s in the OME file\x1b[0m", field, fields[field], )
-            }else if(jsonData[field] && objective[fields[field]]){
-                if(jsonData[field] != objective[fields[field]]){
-                    console.log("\x1b[31mOptional Field '%s' is %s in the JSON file but %s in the OME file\x1b[0m", field, jsonData[field], objective[fields[field]])
-                } else{
-                    console.log("\x1b[36mOptional Field '%s' in the JSON file is consistent with '%s' in the OME file\x1b[0m", field, fields[field])
+            for(let field in fields) {
+                if(jsonData[field] && !objective[fields[field]]){
+                    console.log("\x1b[31mOptional Field %s is present in the JSON file but not found the corresponding field %s in the OME file\x1b[0m", field, fields[field], )
+                }else if(jsonData[field] && objective[fields[field]]){
+                    if(jsonData[field] != objective[fields[field]]){
+                        console.log("\x1b[31mOptional Field '%s' is %s in the JSON file but %s in the OME file\x1b[0m", field, jsonData[field], objective[fields[field]])
+                    } else{
+                        console.log("\x1b[36mOptional Field '%s' in the JSON file is consistent with '%s' in the OME file\x1b[0m", field, fields[field])
+                    }
                 }
             }
         }
-
+        
     })
 })
