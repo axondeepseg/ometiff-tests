@@ -11,10 +11,10 @@ function getExif() {
 
 function convertFactor(omeUnit, jsonUnit) {
     if(!validUnitsInOME.includes(omeUnit)){
-        console.log('\x1b[31mWARNING: PixelSize consistency is only validated for "mm", "µm" and "nm". PhysicalUnit in OME-TIFF is "%s", consistency check is skipped.\x1b[0m', omeUnit)
+        console.log('\x1b[31mERROR: PixelSize consistency is only validated for "mm", "µm" and "nm". PixelSizeUnits in OME-TIFF is "%s", consistency check is skipped.\x1b[0m', omeUnit)
         process.exit(1)
     }else if(!validUnitsInJSON.includes(jsonUnit)) {
-        console.log('\x1b[31mWARNING: PixelSize consistency is only validated for "mm", "um" and "nm". PhysicalUnit in JSON is "%s", consistency check is skipped.\x1b[0m', jsonUnit)
+        console.log('\x1b[31mERROR: PixelSize consistency is only validated for "mm", "um" and "nm". PixelSizeUnits in JSON is "%s", consistency check is skipped.\x1b[0m', jsonUnit)
         process.exit(1)
     }
 
@@ -54,10 +54,6 @@ getExif().then(function(result) {
         const physicalSizeZ = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeZ']
         const physicalSizeZUnit = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeZUnit']
 
-        const immersion = output['OME']['Instrument'][0]['Objective'][0]['$']['Immersion']
-        const LensNA = output['OME']['Instrument'][0]['Objective'][0]['$']['LensNA']
-        const NominalMagnification = output['OME']['Instrument'][0]['Objective'][0]['$']['NominalMagnification']
-
         console.log("\nOME-TIFF metadata")
         const metadata = {
             "PhysicalSizeX" : physicalSizeX,
@@ -67,10 +63,6 @@ getExif().then(function(result) {
             "PhysicalSizeZ" : physicalSizeZ,
             "PhysicalSizeZUnit" : physicalSizeZUnit,
             "DimensionOrder" : output['OME']['Image'][0]['Pixels'][0]['$']['DimensionOrder'],
-            "Immersion" : immersion,
-            "LensNA" : LensNA,
-            "NominalMagnification" : NominalMagnification
-
         }
         console.table(metadata)
         
@@ -94,17 +86,18 @@ getExif().then(function(result) {
 
 
         // optional fields consistency check
-        let fields = {'Immersion': 'Immersion', 'LensNA': 'NumericalAperture', 'NominalMagnification': 'Magnification'}
+        let fields = {'Immersion': 'Immersion', 'NumericalAperture': 'LensNA', 'Magnification': 'NominalMagnification'}
 
         let objective = output['OME']['Instrument'][0]['Objective'][0]['$']
 
-
         for(let field in fields) {
-            if(objective[field] && !jsonData[fields[field]]){
-                console.log("\x1b[31mOptional Field %s is present in the OME-TIFF file but not found the corresponding field %s in the JSON file\x1b[0m", field, fields[field])
-            }else if(objective[field] && jsonData[fields[field]]){
-                if(objective[field] != jsonData[fields[field]]){
-                    console.log("\x1b[31mOptional Field %s is %s in the OME-TIFF file but %s in the JSON file\x1b[0m", field, objective[field], jsonData[fields[field]])
+            if(jsonData[field] && !objective[fields[field]]){
+                console.log("\x1b[31mOptional Field %s is present in the JSON file but not found the corresponding field %s in the OME file\x1b[0m", field, fields[field], )
+            }else if(jsonData[field] && objective[fields[field]]){
+                if(jsonData[field] != objective[fields[field]]){
+                    console.log("\x1b[31mOptional Field '%s' is %s in the JSON file but %s in the OME file\x1b[0m", field, jsonData[field], objective[fields[field]])
+                } else{
+                    console.log("\x1b[36mOptional Field '%s' in the JSON file is consistent with '%s' in the OME file\x1b[0m", field, fields[field])
                 }
             }
         }
