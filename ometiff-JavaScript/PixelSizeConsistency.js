@@ -47,12 +47,18 @@ getExif().then(function(result) {
     
     parseString(xml, function (err, output) {
 
-        const physicalSizeX = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeX']
-        const physicalSizeXUnit = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeXUnit']
-        const physicalSizeY = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeY']
-        const physicalSizeYUnit = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeYUnit']
-        const physicalSizeZ = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeZ']
-        const physicalSizeZUnit = output['OME']['Image'][0]['Pixels'][0]['$']['PhysicalSizeZUnit']
+        let rootKey = Object.keys(output)[0]
+        let namespace = ''
+        if (rootKey.includes(':OME')) {
+          namespace = rootKey.split(':OME')[0].concat(':')
+        }
+
+        const physicalSizeX = output[`${namespace}OME`][`${namespace}Image`][0][`${namespace}Pixels`][0]['$']['PhysicalSizeX']
+        const physicalSizeXUnit = output[`${namespace}OME`][`${namespace}Image`][0][`${namespace}Pixels`][0]['$']['PhysicalSizeXUnit']
+        const physicalSizeY = output[`${namespace}OME`][`${namespace}Image`][0][`${namespace}Pixels`][0]['$']['PhysicalSizeY']
+        const physicalSizeYUnit = output[`${namespace}OME`][`${namespace}Image`][0][`${namespace}Pixels`][0]['$']['PhysicalSizeYUnit']
+        const physicalSizeZ = output[`${namespace}OME`][`${namespace}Image`][0][`${namespace}Pixels`][0]['$']['PhysicalSizeZ']
+        const physicalSizeZUnit = output[`${namespace}OME`][`${namespace}Image`][0][`${namespace}Pixels`][0]['$']['PhysicalSizeZUnit']
 
         console.log("\nOME-TIFF metadata")
         const metadata = {
@@ -62,7 +68,7 @@ getExif().then(function(result) {
             "PhysicalSizeYUnit" : physicalSizeYUnit,
             "PhysicalSizeZ" : physicalSizeZ,
             "PhysicalSizeZUnit" : physicalSizeZUnit,
-            "DimensionOrder" : output['OME']['Image'][0]['Pixels'][0]['$']['DimensionOrder'],
+            "DimensionOrder" : output[`${namespace}OME`][`${namespace}Image`][0][`${namespace}Pixels`][0]['$']['DimensionOrder'],
         }
         console.table(metadata)
         
@@ -88,8 +94,8 @@ getExif().then(function(result) {
         // optional fields consistency check
         let fields = {'Immersion': 'Immersion', 'NumericalAperture': 'LensNA', 'Magnification': 'NominalMagnification'}
 
-        if(output['OME']['Instrument'] && output['OME']['Instrument'][0]['Objective']){
-            let objective = output['OME']['Instrument'][0]['Objective'][0]['$']
+        if(output[`${namespace}OME`][`${namespace}Instrument`] && output[`${namespace}OME`][`${namespace}Instrument`][0][`${namespace}Objective`]){
+            let objective = output[`${namespace}OME`][`${namespace}Instrument`][0][`${namespace}Objective`][0]['$']
 
             for(let field in fields) {
                 if(jsonData[field] && !objective[fields[field]]){
