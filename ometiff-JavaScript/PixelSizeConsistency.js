@@ -49,8 +49,8 @@ getExif().then(function(result) {
 
         let rootKey = Object.keys(output)[0]
         let namespace = ''
-        if (rootKey.includes(':')) {
-          namespace = rootKey.split(':')[0].concat(':')
+        if (rootKey.includes(':OME')) {
+          namespace = rootKey.split(':OME')[0].concat(':')
         }
 
         const physicalSizeX = output[`${namespace}OME`][`${namespace}Image`][0][`${namespace}Pixels`][0]['$']['PhysicalSizeX']
